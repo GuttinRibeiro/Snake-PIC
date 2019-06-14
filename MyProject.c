@@ -68,7 +68,6 @@ void main() {
 
   Delay_ms(1000);
   draw_menu();
-  draw_game_screen();
 
   while(1) {
     // Loop do menu
@@ -87,8 +86,9 @@ void main() {
     
     // Loop do jogo
     while (game_control == 2) {
-      update_score(score);
+      draw_game_screen();
 
+      update_score(score);
       Delay_ms(200);
     }
 
