@@ -36,24 +36,29 @@ Song doremifa;
 unsigned short int song_idx;
 
 unsigned short int game_control;
-// Variáveis globais que configuram o MSB e o LSB do TMR0
+// Variï¿½veis globais que configuram o MSB e o LSB do TMR0
 unsigned short int low_value, high_value;
 
 void interrupt_timer() iv 0x0008 ics ICS_AUTO {
     TMR0L = doremifa.notes_list[song_idx].low_value;           // Configura o valor inicial do timer
     TMR0H = doremifa.notes_list[song_idx].high_value;
+    if(song_idx == doremifa.las_note_idx) {
+      song_idx = 0;
+    } else {
+      song_idx++;
+    }
 
-    late.re1 = ~late.re1;     // Complementa a saída do buzzer para gerar a onda quadrada
-    TMR0IF_bit = 0;         // Zera a flag de interrupção do timer 0
+    late.re1 = ~late.re1;     // Complementa a saï¿½da do buzzer para gerar a onda quadrada
+    TMR0IF_bit = 0;         // Zera a flag de interrupï¿½ï¿½o do timer 0
     TMR0IE_bit = 1;
 }
 
-// Desenha as instruções do jogo no LCD
+// Desenha as instruï¿½ï¿½es do jogo no LCD
 void draw_instructions() {
   Glcd_Write_Text("TODO", 16, 2, 1);
 }
 
-// Desenha as opções do menu no LCD
+// Desenha as opï¿½ï¿½es do menu no LCD
 void draw_menu() {
   Glcd_Write_Text("Jogar - 2", 16, 2, 1);
   Glcd_Write_Text("Instrucoes- 8", 16, 4, 1);
@@ -65,7 +70,7 @@ void draw_menu() {
   Glcd_Line(115, 10, 115, 50, 1);                 // Linha lateral direita
 }
 
-// Função que atualiza a pontuação do jogador no LCD
+// Funï¿½ï¿½o que atualiza a pontuaï¿½ï¿½o do jogador no LCD
 void update_score(unsigned short int new_score) {
     char str[10];
 
@@ -73,7 +78,7 @@ void update_score(unsigned short int new_score) {
     Glcd_Write_Text(str, 40, 0, 1);
 }
 
-// Função que desenha o quadrado do jogo
+// Funï¿½ï¿½o que desenha o quadrado do jogo
 void draw_game_screen() {
     Glcd_Write_Text("Score:", 0, 0, 1);
 
@@ -141,7 +146,7 @@ void main() {
   doremifa.notes_list[6].high_value = 0xFF;
   song_idx = 0;
 
-  low_value = doremifa.notes_list[0].low_value;                     // valores iniciais das Variáveis globais para evitar erros
+  low_value = doremifa.notes_list[0].low_value;                     // valores iniciais das Variï¿½veis globais para evitar erros
   high_value = doremifa.notes_list[0].low_value;
 
   game_control = 0;
@@ -150,11 +155,11 @@ void main() {
   ANSELC = 0;
   ANSELD = 0;
   ANSELE = 0;
-  trise.f1 = 0;                            // RE1 configurada como saída
+  trise.f1 = 0;                            // RE1 configurada como saï¿½da
   late.re1 = 1;
-  //                 T0: timer para geração das ondas quadradas
+  //                 T0: timer para geraï¿½ï¿½o das ondas quadradas
   T0CON = 0b10001000;        // T0CON 16 bits sem prescaler
-  GIE_bit = 1;             // Habilita interrupção global
+  GIE_bit = 1;             // Habilita interrupï¿½ï¿½o global
   TMR0IF_bit = 0;
   TMR0IE_bit = 0;          // COlocar como 1 para ligar buzzer
   trisc = 0b11110000;                      // bits 7-4 como entrada e bits 3-0 como saida
@@ -179,7 +184,7 @@ void main() {
     }
     Glcd_Fill(0x00);                               // Clear GLCD
     
-    // Loop das intruções
+    // Loop das intruï¿½ï¿½es
     while (game_control == 1) {
       draw_instructions();
       Delay_ms(200);
