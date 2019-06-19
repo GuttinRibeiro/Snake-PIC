@@ -21,14 +21,14 @@ sbit GLCD_RST_Direction at TRISB5_bit;
 // End Glcd module connections
 
 // Global
-typdef struct musical_note {
+typedef struct musical_note {
   unsigned short int low_value;
   unsigned short int high_value;
 } Note;
 
 typedef struct song {
-  notes_list[20];
-  last_note_idx;
+  Note notes_list[20];
+  unsigned short int last_note_idx;
 } Song;
 
 
@@ -36,33 +36,33 @@ Song doremifa;
 unsigned short int song_idx;
 
 unsigned short int game_control;
-// Vari�veis globais que configuram o MSB e o LSB do TMR0
+// Vari?veis globais que configuram o MSB e o LSB do TMR0
 unsigned short int low_value, high_value;
 
 void interrupt_timer() iv 0x0008 ics ICS_AUTO {
     TMR0L = doremifa.notes_list[song_idx].low_value;           // Configura o valor inicial do timer
     TMR0H = doremifa.notes_list[song_idx].high_value;
-    if(song_idx == doremifa.las_note_idx) {
+    if(song_idx == doremifa.last_note_idx) {
       song_idx = 0;
     } else {
       song_idx++;
     }
 
-    late.re1 = ~late.re1;     // Complementa a sa�da do buzzer para gerar a onda quadrada
-    TMR0IF_bit = 0;         // Zera a flag de interrup��o do timer 0
+    late.re1 = ~late.re1;     // Complementa a sa?da do buzzer para gerar a onda quadrada
+    TMR0IF_bit = 0;         // Zera a flag de interrup??o do timer 0
     TMR0IE_bit = 1;
 }
 
-// Desenha as instru��es do jogo no LCD
+// Desenha as instru??es do jogo no LCD
 void draw_instructions() {
   Glcd_Write_Text("TODO", 16, 2, 1);
 }
 
-// Desenha as op��es do menu no LCD
+// Desenha as op??es do menu no LCD
 void draw_menu() {
   Glcd_Write_Text("Jogar - 2", 16, 2, 1);
   Glcd_Write_Text("Instrucoes- 8", 16, 4, 1);
-  
+
   // Drawing the menu screen
   Glcd_Line(12, 10, 115, 10, 1);                 // Linha superior
   Glcd_Line(12, 50, 115, 50, 1);                 // Linha inferior
@@ -70,7 +70,7 @@ void draw_menu() {
   Glcd_Line(115, 10, 115, 50, 1);                 // Linha lateral direita
 }
 
-// Fun��o que atualiza a pontua��o do jogador no LCD
+// Fun??o que atualiza a pontua??o do jogador no LCD
 void update_score(unsigned short int new_score) {
     char str[10];
 
@@ -78,7 +78,7 @@ void update_score(unsigned short int new_score) {
     Glcd_Write_Text(str, 40, 0, 1);
 }
 
-// Fun��o que desenha o quadrado do jogo
+// Fun??o que desenha o quadrado do jogo
 void draw_game_screen() {
     Glcd_Write_Text("Score:", 0, 0, 1);
 
@@ -146,7 +146,7 @@ void main() {
   doremifa.notes_list[6].high_value = 0xFF;
   song_idx = 0;
 
-  low_value = doremifa.notes_list[0].low_value;                     // valores iniciais das Vari�veis globais para evitar erros
+  low_value = doremifa.notes_list[0].low_value;                     // valores iniciais das Vari?veis globais para evitar erros
   high_value = doremifa.notes_list[0].low_value;
 
   game_control = 0;
@@ -155,11 +155,11 @@ void main() {
   ANSELC = 0;
   ANSELD = 0;
   ANSELE = 0;
-  trise.f1 = 0;                            // RE1 configurada como sa�da
+  trise.f1 = 0;                            // RE1 configurada como sa?da
   late.re1 = 1;
-  //                 T0: timer para gera��o das ondas quadradas
+  //                 T0: timer para gera??o das ondas quadradas
   T0CON = 0b10001000;        // T0CON 16 bits sem prescaler
-  GIE_bit = 1;             // Habilita interrup��o global
+  GIE_bit = 1;             // Habilita interrup??o global
   TMR0IF_bit = 0;
   TMR0IE_bit = 0;          // COlocar como 1 para ligar buzzer
   trisc = 0b11110000;                      // bits 7-4 como entrada e bits 3-0 como saida
@@ -183,8 +183,8 @@ void main() {
       }
     }
     Glcd_Fill(0x00);                               // Clear GLCD
-    
-    // Loop das intru��es
+
+    // Loop das intru??es
     while (game_control == 1) {
       draw_instructions();
       Delay_ms(200);
@@ -193,7 +193,7 @@ void main() {
       }
     }
     Glcd_Fill(0x00);                               // Clear GLCD
-    
+
     // Loop do jogo
     while (game_control == 2) {
       draw_game_screen();
