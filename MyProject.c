@@ -1,4 +1,4 @@
-ï»¿#define MENU 0
+#define MENU 0
 #define GAME 1
 #define INST 2
 
@@ -115,7 +115,7 @@ void interrupt_timer() iv 0x0008 ics ICS_AUTO {
     TMR0IE_bit = 1;
 }
 
-// FunÃ§Ãµes para estruturas de dados
+// Funções para estruturas de dados
 void init_snake(Snake *player) {
   unsigned short int i;
   player->tail_idx = 2;
@@ -124,7 +124,7 @@ void init_snake(Snake *player) {
        player->list[i].posx = 50+i;
        player->list[i].posy = 50;
   }
-  
+
   player->list[0].posx = 50;
   player->list[0].posy = 50;
   player->gameover = 0;
@@ -179,7 +179,7 @@ void move_snake(Snake *player, unsigned short int movement) {
                          player->list[0].posx--;
                     }
         break;
-        
+
         case RIGHT:
                     if(player->list[0].posx == 126) {   // chocou com a parede da direita
                          player->gameover = 1;
@@ -187,7 +187,7 @@ void move_snake(Snake *player, unsigned short int movement) {
                          player->list[0].posx++;
                     }
         break;
-   
+
         case UP:
                     if(player->list[0].posy == 10) {   // chocou com a parede de cima
                          player->gameover = 1;
@@ -195,7 +195,7 @@ void move_snake(Snake *player, unsigned short int movement) {
                          player->list[0].posy--;
                     }
         break;
-        
+
         case DOWN:
                     if(player->list[0].posy == 62) {   // chocou com a parede de baixo
                          player->gameover = 1;
@@ -214,8 +214,20 @@ void move_snake(Snake *player, unsigned short int movement) {
          aux1.posx = aux2.posx;
          aux1.posy = aux2.posy;
    }
-   
+
    Glcd_Dot(aux1.posx, aux1.posy, 2);
+}
+
+Position add_fruit(Snake player) {
+     Position ret;
+     ret.posx = rand() % 62 + 1;
+     ret.posy = rand() % 126 + 1;
+     while(has_position(player, ret)) {
+         ret.posx = rand() % 62 + 1;
+         ret.posy = rand() % 126 + 1;
+     }
+
+     return ret;
 }
 
 // Funcao que atualiza a pontuacao do jogador no LCD
@@ -277,7 +289,9 @@ void main() {
   unsigned short int movement = LEFT;
   char str[10];
   Snake player;
+  Position fruit;
   init_snake(&player);
+  fruit  = add_fruit(player);
 
   doremifa.last_note_idx = 6;
   doremifa.notes_list[0].low_value = 0x1E;
@@ -333,7 +347,7 @@ void main() {
     }
     Glcd_Fill(0x00);                               // Clear GLCD
 
-    // Loop das intru??es
+    // Loop das intrucoes
     while (game_control == 1) {
       Glcd_Image(instrucoes);
       Delay_ms(200);
@@ -346,8 +360,8 @@ void main() {
     // Loop do jogo
     while (game_control == 2) {
       draw_game_screen();
-
       update_score(score);
+      Glcd_Dot(fruit.posx, fruit.posy, 1);
       draw_snake(player);
       for(i = 0; i < 3; i++) {
             check_keypad(i, GAME, &movement);
@@ -357,7 +371,7 @@ void main() {
       Delay_ms(100);
       //Glcd_Fill(0x00);
 
-      
+
       if(player.gameover) {
            Delay_ms(200);
            // Fim do jogo:
