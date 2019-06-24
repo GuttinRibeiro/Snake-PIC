@@ -72,16 +72,6 @@ enum {
     DOWN
 };
 
-typedef struct musical_note {
-  unsigned short int low_value;
-  unsigned short int high_value;
-} Note;
-
-typedef struct song {
-  Note notes_list[20];
-  unsigned short int last_note_idx;
-} Song;
-
 typedef struct position {
      unsigned short int posx;
      unsigned short int posy;
@@ -94,26 +84,8 @@ typedef struct snake_char {
   unsigned short int win;
 } Snake;
 
-Song doremifa;
-unsigned short int song_idx;
 
 unsigned short int game_control;
-// Vari?veis globais que configuram o MSB e o LSB do TMR0
-unsigned short int low_value, high_value;
-
-void interrupt_timer() iv 0x0008 ics ICS_AUTO {
-    TMR0L = doremifa.notes_list[song_idx].low_value;           // Configura o valor inicial do timer
-    TMR0H = doremifa.notes_list[song_idx].high_value;
-    if(song_idx == doremifa.last_note_idx) {
-      song_idx = 0;
-    } else {
-      song_idx++;
-    }
-
-    late.re1 = ~late.re1;     // Complementa a sa?da do buzzer para gerar a onda quadrada
-    TMR0IF_bit = 0;         // Zera a flag de interrup??o do timer 0
-    TMR0IE_bit = 1;
-}
 
 // Funções para estruturas de dados
 void init_snake(Snake *player) {
@@ -164,6 +136,7 @@ void head_conflit(Snake *player) {
    unsigned short new_tail;
    for(i = 1; i < player->tail_idx+1; i++) {
         if(player->list[0].posx == player->list[i].posx && player->list[0].posy == player->list[i].posy) {
+              Sound_Play(100, 1000);   // Frequency = 100Hz, duration = 1000ms
               new_tail = i;
               for(i = new_tail; i < player->tail_idx + 1; i++) {
                    Glcd_Dot(player->list[i].posx, player->list[i].posy, 2);
@@ -317,26 +290,6 @@ void main() {
   fruit  = add_fruit(player);
   score = player.tail_idx;
 
-  doremifa.last_note_idx = 6;
-  doremifa.notes_list[0].low_value = 0x1E;
-  doremifa.notes_list[0].high_value = 0xFE;
-  doremifa.notes_list[1].low_value = 0x56;
-  doremifa.notes_list[1].high_value = 0xFE;
-  doremifa.notes_list[2].low_value = 0x85;
-  doremifa.notes_list[2].high_value = 0xFE;
-  doremifa.notes_list[3].low_value = 0x9A;
-  doremifa.notes_list[3].high_value = 0xFE;
-  doremifa.notes_list[4].low_value = 0xC1;
-  doremifa.notes_list[4].high_value = 0xFE;
-  doremifa.notes_list[5].low_value = 0xE4;
-  doremifa.notes_list[5].high_value = 0xFE;
-  doremifa.notes_list[6].low_value = 0x03;
-  doremifa.notes_list[6].high_value = 0xFF;
-  song_idx = 0;
-
-  low_value = doremifa.notes_list[0].low_value;                     // valores iniciais das Vari?veis globais para evitar erros
-  high_value = doremifa.notes_list[0].low_value;
-
   game_control = 0;
   ANSELA  = 0;                                    // Configure AN pins as digital
   ANSELB = 0;
@@ -345,11 +298,8 @@ void main() {
   ANSELE = 0;
   trise.f1 = 0;                            // RE1 configurada como sa?da
   late.re1 = 1;
-  //                 T0: timer para gera??o das ondas quadradas
-  T0CON = 0b10001000;        // T0CON 16 bits sem prescaler
-  GIE_bit = 1;             // Habilita interrup??o global
-  TMR0IF_bit = 0;
-  TMR0IE_bit = 0;          // COlocar como 1 para ligar buzzer
+
+  Sound_Init(&PORTE, 1);
   trisc = 0b11110000;                      // bits 7-4 como entrada e bits 3-0 como saida
 
   C1ON_bit = 0;                                  // Disable comparators
@@ -395,6 +345,7 @@ void main() {
       head_conflit(&player);
       score = player.tail_idx;
       if(has_position(player, fruit)) {
+          Sound_Play(600, 1000);   // Frequency = 600Hz, duration = 1000ms
           if(movement == LEFT) {
                aux.posx = player.list[player.tail_idx].posx + 1;
                aux.posy = player.list[player.tail_idx].posy;
