@@ -118,7 +118,7 @@ void interrupt_timer() iv 0x0008 ics ICS_AUTO {
 // Funções para estruturas de dados
 void init_snake(Snake *player) {
   unsigned short int i;
-  player->tail_idx = 2;
+  player->tail_idx = 30;
 
   for (i = 0; i < player->tail_idx+1; i++) {
        player->list[i].posx = 50+i;
@@ -218,24 +218,33 @@ void move_snake(Snake *player, unsigned short int movement) {
    Glcd_Dot(aux1.posx, aux1.posy, 2);
 }
 
-Position add_fruit(Snake player) {
-     Position ret;
-     ret.posx = rand() % 62 + 1;
-     ret.posy = rand() % 126 + 1;
-     while(has_position(player, ret)) {
-         ret.posx = rand() % 62 + 1;
-         ret.posy = rand() % 126 + 1;
-     }
-
-     return ret;
-}
-
 // Funcao que atualiza a pontuacao do jogador no LCD
 void update_score(unsigned short int new_score) {
     char str[10];
 
     IntToStr(new_score, str);
     Glcd_Write_Text(str, 40, 0, 1);
+}
+
+unsigned short manhattan_dist(Position pos1, Position pos2) {
+     unsigned short int x = pos1.posx - pos2.posx;
+     unsigned short int y = pos1.posy - pos2.posy;
+     if(x < 0) x = -1*x;
+     
+     if(y < 0) y = -1*y;
+     
+     return x+y;
+}
+
+Position add_fruit(Snake player) {
+     Position ret;
+     ret.posx = rand() % 123 + 3;
+     ret.posy = rand() % 52 + 12;
+     while(has_position(player, ret) && manhattan_dist(player.list[0], ret) < player.tail_idx+2) {
+         ret.posx = rand() % 123 + 3;
+         ret.posy = rand() % 52 + 12;
+     }
+     return ret;
 }
 
 // Funcao que desenha o quadrado do jogo
@@ -289,7 +298,7 @@ void main() {
   unsigned short int movement = LEFT;
   char str[10];
   Snake player;
-  Position fruit;
+  Position fruit, aux;
   init_snake(&player);
   fruit  = add_fruit(player);
 
@@ -366,9 +375,28 @@ void main() {
       for(i = 0; i < 3; i++) {
             check_keypad(i, GAME, &movement);
       }
-      Delay_ms(400);
+      Delay_ms(25);
       move_snake(&player, movement);
-      Delay_ms(100);
+      if(has_position(player, fruit)) {
+          if(movement == LEFT) {
+               aux.posx = player.list[player.tail_idx].posx + 1;
+               aux.posy = player.list[player.tail_idx].posy;
+          } else if(movement == RIGHT) {
+               aux.posx = player.list[player.tail_idx].posx - 1;
+               aux.posy = player.list[player.tail_idx].posy;
+          } else if(movement == UP) {
+               aux.posx = player.list[player.tail_idx].posx;
+               aux.posy = player.list[player.tail_idx].posy + 1;
+          } else if(movement == DOWN) {
+               aux.posx = player.list[player.tail_idx].posx;
+               aux.posy = player.list[player.tail_idx].posy - 1;
+          }
+          append_position(&player, aux);
+          Glcd_Dot(fruit.posx, fruit.posy, 2);
+          fruit = add_fruit(player);
+          score++;
+      }
+      Delay_ms(25);
       //Glcd_Fill(0x00);
 
 
@@ -390,6 +418,7 @@ void main() {
       }
 
     }
+    score = 0;
     Glcd_Fill(0x00);
   }
 }
