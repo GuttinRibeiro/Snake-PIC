@@ -159,6 +159,20 @@ int has_position(Snake player, Position pos) {
      return 0;
 }
 
+void head_conflit(Snake *player) {
+   unsigned short i;
+   unsigned short new_tail;
+   for(i = 1; i < player->tail_idx+1; i++) {
+        if(player->list[0].posx == player->list[i].posx && player->list[0].posy == player->list[i].posy) {
+              new_tail = i;
+              for(i = new_tail; i < player->tail_idx + 1; i++) {
+                   Glcd_Dot(player->list[i].posx, player->list[i].posy, 2);
+              }
+              player->tail_idx = new_tail;
+        }
+   }
+}
+
 void draw_snake(Snake player) {
   unsigned short int i;
   for (i = 0; i < player.tail_idx+1; i++) {
@@ -293,7 +307,7 @@ void check_keypad(unsigned short int idx, unsigned short int function, unsigned 
 }
 
 void main() {
-  unsigned short int score = 0;
+  unsigned short int score;
   unsigned short int i;
   unsigned short int movement = LEFT;
   char str[10];
@@ -301,6 +315,7 @@ void main() {
   Position fruit, aux;
   init_snake(&player);
   fruit  = add_fruit(player);
+  score = player.tail_idx;
 
   doremifa.last_note_idx = 6;
   doremifa.notes_list[0].low_value = 0x1E;
@@ -377,6 +392,8 @@ void main() {
       }
       Delay_ms(25);
       move_snake(&player, movement);
+      head_conflit(&player);
+      score = player.tail_idx;
       if(has_position(player, fruit)) {
           if(movement == LEFT) {
                aux.posx = player.list[player.tail_idx].posx + 1;
@@ -418,7 +435,7 @@ void main() {
       }
 
     }
-    score = 0;
+    score = player.tail_idx;
     Glcd_Fill(0x00);
   }
 }
