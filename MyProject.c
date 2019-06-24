@@ -197,7 +197,7 @@ void move_snake(Snake *player, unsigned short int movement) {
         break;
         
         case DOWN:
-                    if(player->list[0].posy == 126) {   // chocou com a parede de baixo
+                    if(player->list[0].posy == 62) {   // chocou com a parede de baixo
                          player->gameover = 1;
                     } else {
                          player->list[0].posy++;
@@ -238,13 +238,13 @@ void draw_game_screen() {
     Glcd_Line(127, 9, 127, 127, 1);                 // Draw line
 }
 
-void check_keypad(unsigned short int idx, unsigned short int function) {
+void check_keypad(unsigned short int idx, unsigned short int function, unsigned short int *movement) {
     switch(idx) {
                 case 0:
                        latc = 0b11111110;   // Escreve 0 na coluna 0
                         if(portc.rc5 == 0) {
                                     // Apertou 4
-
+                                    if(function == GAME && (!(*movement == LEFT || *movement == RIGHT))) *movement = LEFT;
                        }
                        break;
                 case 1:
@@ -253,28 +253,28 @@ void check_keypad(unsigned short int idx, unsigned short int function) {
                                     // Apertou 2
                                     if(function == MENU) game_control = 2;
                                     if(function == INST) game_control = 0;
+                                    if(function == GAME && (!(*movement == UP || *movement == DOWN))) *movement = UP;
 
                        } else if(portc.rc6 == 0) {
                                     // Apertou 8
                                     if(function == MENU) game_control = 1;
-
+                                    if(function == GAME &&  (!(*movement == UP || *movement == DOWN))) *movement = DOWN;
                        }
                        break;
                 case 2:
                        latc = 0b11111011;   // Escreve 0 na coluna 2
                        if(portc.rc5 == 0) {
                                     // Apertou 6
-
+                                    if(function == GAME &&  (!(*movement == LEFT || *movement == RIGHT))) *movement = RIGHT;
                        }
                        break;
     }
 }
 
-
-
 void main() {
-  unsigned short int score = 100;
+  unsigned short int score = 0;
   unsigned short int i;
+  unsigned short int movement = LEFT;
   char str[10];
   Snake player;
   init_snake(&player);
@@ -328,7 +328,7 @@ void main() {
       Glcd_Image(snake);
       Delay_ms(200);
       for(i = 0; i < 3; i++) {
-            check_keypad(i, MENU);
+            check_keypad(i, MENU, &movement);
       }
     }
     Glcd_Fill(0x00);                               // Clear GLCD
@@ -338,7 +338,7 @@ void main() {
       Glcd_Image(instrucoes);
       Delay_ms(200);
       for(i = 0; i < 3; i++) {
-            check_keypad(i, INST);
+            check_keypad(i, INST, &movement);
       }
     }
     Glcd_Fill(0x00);                               // Clear GLCD
@@ -349,8 +349,12 @@ void main() {
 
       update_score(score);
       draw_snake(player);
-      Delay_ms(500);
-      move_snake(&player, UP);
+      for(i = 0; i < 3; i++) {
+            check_keypad(i, GAME, &movement);
+      }
+      Delay_ms(400);
+      move_snake(&player, movement);
+      Delay_ms(100);
       //Glcd_Fill(0x00);
 
       
