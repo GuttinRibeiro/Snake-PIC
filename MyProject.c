@@ -1,4 +1,4 @@
-#define MENU 0
+﻿#define MENU 0
 #define GAME 1
 #define INST 2
 
@@ -141,7 +141,7 @@ int has_position(Snake player, Position pos) {
                return 1;
           }
      }
-     
+
      return 0;
 }
 
@@ -150,20 +150,6 @@ void draw_snake(Snake player) {
   for (i = 0; i < player.tail_idx; i++) {
       Glcd_Dot(player.list[i].posx, player.list[i].posy, 1);
   }
-}
-
-// Desenha as opcoes do menu no LCD
-void draw_menu() {
- /*Glcd_Write_Text("Jogar - 2", 16, 2, 1);
-  Glcd_Write_Text("Instrucoes- 8", 16, 4, 1);
-
-  // Drawing the menu screen
-  Glcd_Line(12, 10, 115, 10, 1);                 // Linha superior
-  Glcd_Line(12, 50, 115, 50, 1);                 // Linha inferior
-  Glcd_Line(12, 10, 12, 50, 1);                    // Linha lateral esquerda
-  Glcd_Line(115, 10, 115, 50, 1);                 // Linha lateral direita
-   */
-  Glcd_Image(snake);
 }
 
 // Funcao que atualiza a pontuacao do jogador no LCD
@@ -223,9 +209,10 @@ void check_keypad(unsigned short int idx, unsigned short int function) {
 void main() {
   unsigned short int score = 100;
   unsigned short int i;
+  char str[10];
   Snake player;
   init_snake(&player);
-  
+
   doremifa.last_note_idx = 6;
   doremifa.notes_list[0].low_value = 0x1E;
   doremifa.notes_list[0].high_value = 0xFE;
@@ -268,12 +255,11 @@ void main() {
   Glcd_Fill(0x00);                               // Clear GLCD
 
   Delay_ms(1000);
-  draw_menu();
 
   while(1) {
     // Loop do menu
     while(game_control == 0) {
-      draw_menu();
+      Glcd_Image(snake);
       Delay_ms(200);
       for(i = 0; i < 3; i++) {
             check_keypad(i, MENU);
@@ -298,7 +284,9 @@ void main() {
       update_score(score);
       draw_snake(player);
       Delay_ms(200);
-      
+      player.gameover = 1;
+      player.win = 1;
+
       if(player.gameover) {
            Glcd_Fill(0x00);
            Delay_ms(200);
@@ -307,10 +295,12 @@ void main() {
              Glcd_Image(gameover);
            } else {
              Glcd_Image(trofeu);
-           //TODO: escrever pontuação
+             Glcd_Write_Text("Score:", 57, 4, 1);
+                 IntToStr(score, str);
+                 Glcd_Write_Text(str, 90, 4, 1);
            }
 
-           Delay_ms(2000);
+           Delay_ms(5000);
            game_control = 0;
            init_snake(&player);
       }
