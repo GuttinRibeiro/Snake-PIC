@@ -64,6 +64,17 @@ typedef struct song {
   unsigned short int last_note_idx;
 } Song;
 
+typedef struct position {
+     unsigned short int posx;
+     unsigned short int posy;
+} Position;
+
+typedef struct snake_char {
+  Position list[200];
+  unsigned short int tail_idx;
+  unsigned short int gameover;
+  unsigned short int win;
+} Snake;
 
 Song doremifa;
 unsigned short int song_idx;
@@ -84,6 +95,50 @@ void interrupt_timer() iv 0x0008 ics ICS_AUTO {
     late.re1 = ~late.re1;     // Complementa a sa?da do buzzer para gerar a onda quadrada
     TMR0IF_bit = 0;         // Zera a flag de interrup??o do timer 0
     TMR0IE_bit = 1;
+}
+
+// Funções para estruturas de dados
+void init_snake(Snake *player) {
+  player->tail_idx = 0;
+  player->list[player->tail_idx].posx = 50;
+  player->list[player->tail_idx].posy = 50;
+  player->gameover = 0;
+  player->win = 0;
+}
+
+int append_position(Snake *player, Position pos) {
+  if(player->tail_idx == 199) {
+        player->gameover = 1;
+        player->win = 1;
+        return 1;
+  }
+
+  if(pos.posx > 127 || pos.posy > 63) {
+        return 1;
+  }
+
+  player->tail_idx++;
+  player->list[player->tail_idx].posx = pos.posx;
+  player->list[player->tail_idx].posy = pos.posy;
+  return 0;
+}
+
+int has_position(Snake player, Position pos) {
+     unsigned short int i;
+     for (i = 0; i < player.tail_idx; i++) {
+          if(player.list[i].posx == pos.posx && player.list[i].posy == pos.posy) {
+               return 1;
+          }
+     }
+     
+     return 0;
+}
+
+void draw_snake(Snake player) {
+  unsigned short int i;
+  for (i = 0; i < player.tail_idx; i++) {
+      Glcd_Dot(player.list[i].posx, player.list[i].posy, 1);
+  }
 }
 
 // Desenha as op??es do menu no LCD
@@ -158,7 +213,9 @@ void check_keypad(unsigned short int idx, unsigned short int function) {
 void main() {
   unsigned short int score = 100;
   unsigned short int i;
-
+  Snake player;
+  init_snake(&player);
+  
   doremifa.last_note_idx = 6;
   doremifa.notes_list[0].low_value = 0x1E;
   doremifa.notes_list[0].high_value = 0xFE;
@@ -229,10 +286,19 @@ void main() {
       draw_game_screen();
 
       update_score(score);
+      draw_snake(player);
       Delay_ms(200);
       
-      // Fim do jogo:
-      Glcd_Image(gameover);
+      if(player.gameover && !player.win) {
+           Glcd_Fill(0x00);
+           Delay_ms(200);
+           // Fim do jogo:
+           Glcd_Image(gameover);
+           Delay_ms(2000);
+           game_control = 0;
+           init_snake(&player);
+      }
+
     }
     Glcd_Fill(0x00);
   }
