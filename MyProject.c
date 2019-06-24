@@ -65,6 +65,13 @@ sbit GLCD_RST_Direction at TRISB5_bit;
 // End Glcd module connections
 
 // Global
+enum {
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN
+};
+
 typedef struct musical_note {
   unsigned short int low_value;
   unsigned short int high_value;
@@ -110,9 +117,16 @@ void interrupt_timer() iv 0x0008 ics ICS_AUTO {
 
 // Funções para estruturas de dados
 void init_snake(Snake *player) {
-  player->tail_idx = 0;
-  player->list[player->tail_idx].posx = 50;
-  player->list[player->tail_idx].posy = 50;
+  unsigned short int i;
+  player->tail_idx = 2;
+
+  for (i = 0; i < player->tail_idx+1; i++) {
+       player->list[i].posx = 50+i;
+       player->list[i].posy = 50;
+  }
+  
+  player->list[0].posx = 50;
+  player->list[0].posy = 50;
   player->gameover = 0;
   player->win = 0;
 }
@@ -147,9 +161,61 @@ int has_position(Snake player, Position pos) {
 
 void draw_snake(Snake player) {
   unsigned short int i;
-  for (i = 0; i < player.tail_idx; i++) {
+  for (i = 0; i < player.tail_idx+1; i++) {
       Glcd_Dot(player.list[i].posx, player.list[i].posy, 1);
   }
+}
+
+void move_snake(Snake *player, unsigned short int movement) {
+   unsigned short int i;
+   Position aux1, aux2;
+   aux1.posx = player->list[0].posx;
+   aux1.posy = player->list[0].posy;
+   switch (movement) {
+        case LEFT:
+                    if(player->list[0].posx == 1) {   // chocou com a parede da esquerda
+                         player->gameover = 1;
+                    } else {
+                         player->list[0].posx--;
+                    }
+        break;
+        
+        case RIGHT:
+                    if(player->list[0].posx == 126) {   // chocou com a parede da direita
+                         player->gameover = 1;
+                    } else {
+                         player->list[0].posx++;
+                    }
+        break;
+   
+        case UP:
+                    if(player->list[0].posy == 10) {   // chocou com a parede de cima
+                         player->gameover = 1;
+                    } else {
+                         player->list[0].posy--;
+                    }
+        break;
+        
+        case DOWN:
+                    if(player->list[0].posy == 126) {   // chocou com a parede de baixo
+                         player->gameover = 1;
+                    } else {
+                         player->list[0].posy++;
+                    }
+        break;
+   }
+
+
+   for(i = 1; i < player->tail_idx + 1; i++) {
+         aux2.posx = player->list[i].posx;
+         aux2.posy = player->list[i].posy;
+         player->list[i].posx = aux1.posx;
+         player->list[i].posy = aux1.posy;
+         aux1.posx = aux2.posx;
+         aux1.posy = aux2.posy;
+   }
+   
+   Glcd_Dot(aux1.posx, aux1.posy, 2);
 }
 
 // Funcao que atualiza a pontuacao do jogador no LCD
@@ -283,12 +349,12 @@ void main() {
 
       update_score(score);
       draw_snake(player);
-      Delay_ms(200);
-      player.gameover = 1;
-      player.win = 1;
+      Delay_ms(500);
+      move_snake(&player, UP);
+      //Glcd_Fill(0x00);
 
+      
       if(player.gameover) {
-           Glcd_Fill(0x00);
            Delay_ms(200);
            // Fim do jogo:
            if(!player.win) {
