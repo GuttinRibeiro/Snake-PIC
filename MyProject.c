@@ -90,7 +90,7 @@ unsigned short int game_control;
 // Funções para estruturas de dados
 void init_snake(Snake *player) {
   unsigned short int i;
-  player->tail_idx = 30;
+  player->tail_idx = 199;
 
   for (i = 0; i < player->tail_idx+1; i++) {
        player->list[i].posx = 50+i;
@@ -375,12 +375,13 @@ void main() {
            // Fim do jogo:
            if(!player.win) {
              Glcd_Image(gameover);
+              Sound_Play(132, 500);  Sound_Play(132, 250);  Sound_Play(132, 200);  Sound_Play(132, 200);  Sound_Play(148, 250); Sound_Play(165, 300); Sound_Play(165, 1000);
            } else {
              Glcd_Image(trofeu);
              Glcd_Write_Text("Score:", 57, 4, 1);
              IntToStr(score, str);
              Glcd_Write_Text(str, 90, 4, 1);
-             //Tocar ode à alegria:
+             //Tocar ode à alegria - não ficou nem um pouco parecido no PIC:
              //MI - MI - FA - SOL - SOL
              Sound_Play(165, 250); Sound_Play(165, 250); Sound_Play(176, 250); Sound_Play(198, 250); Sound_Play(198, 250);
              //FA - MI - RE - DO - DO
