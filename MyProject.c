@@ -162,6 +162,7 @@ void move_snake(Snake *player, unsigned short int movement) {
         case LEFT:
                     if(player->list[0].posx == 1) {   // chocou com a parede da esquerda
                          player->gameover = 1;
+                         Sound_Play(100, 1000);   // Frequency = 100Hz, duration = 1000ms
                     } else {
                          player->list[0].posx--;
                     }
@@ -170,6 +171,7 @@ void move_snake(Snake *player, unsigned short int movement) {
         case RIGHT:
                     if(player->list[0].posx == 126) {   // chocou com a parede da direita
                          player->gameover = 1;
+                         Sound_Play(100, 1000);   // Frequency = 100Hz, duration = 1000ms
                     } else {
                          player->list[0].posx++;
                     }
@@ -178,6 +180,7 @@ void move_snake(Snake *player, unsigned short int movement) {
         case UP:
                     if(player->list[0].posy == 10) {   // chocou com a parede de cima
                          player->gameover = 1;
+                         Sound_Play(100, 1000);   // Frequency = 100Hz, duration = 1000ms
                     } else {
                          player->list[0].posy--;
                     }
@@ -186,6 +189,7 @@ void move_snake(Snake *player, unsigned short int movement) {
         case DOWN:
                     if(player->list[0].posy == 62) {   // chocou com a parede de baixo
                          player->gameover = 1;
+                         Sound_Play(100, 1000);   // Frequency = 100Hz, duration = 1000ms
                     } else {
                          player->list[0].posy++;
                     }
@@ -365,8 +369,6 @@ void main() {
           score++;
       }
       Delay_ms(25);
-      //Glcd_Fill(0x00);
-
 
       if(player.gameover) {
            Delay_ms(200);
@@ -376,8 +378,15 @@ void main() {
            } else {
              Glcd_Image(trofeu);
              Glcd_Write_Text("Score:", 57, 4, 1);
-                 IntToStr(score, str);
-                 Glcd_Write_Text(str, 90, 4, 1);
+             IntToStr(score, str);
+             Glcd_Write_Text(str, 90, 4, 1);
+             //Tocar ode à alegria:
+             //MI - MI - FA - SOL - SOL
+             Sound_Play(165, 250); Sound_Play(165, 250); Sound_Play(176, 250); Sound_Play(198, 250); Sound_Play(198, 250);
+             //FA - MI - RE - DO - DO
+             Sound_Play(176, 250); Sound_Play(165, 250); Sound_Play(148, 250); Sound_Play(132, 250); Sound_Play(132, 250);
+             //RE - MI - MI - RE - RE
+             Sound_Play(148, 250); Sound_Play(165, 250); Sound_Play(165, 250); Sound_Play(148, 250); Sound_Play(148, 250);
            }
 
            Delay_ms(5000);
