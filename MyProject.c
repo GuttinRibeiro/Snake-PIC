@@ -1,8 +1,12 @@
+/* Por: Augusto Ribeiro Castro - 9771421
+        Gabriel Santos Ribeiro - 9771380
+*/
+
 #define MENU 0
 #define GAME 1
 #define INST 2
 
-// Glcd module connections
+// ConexÃ£o de dados do GLCD
 char GLCD_DataPort at PORTD;
 
 const code char gameover[1024] = {
@@ -87,7 +91,7 @@ typedef struct snake_char {
 
 unsigned short int game_control;
 
-// Funções para estruturas de dados
+// Funï¿½ï¿½es para estruturas de dados
 void init_snake(Snake *player) {
   unsigned short int i;
   player->tail_idx = 199;
@@ -381,7 +385,7 @@ void main() {
              Glcd_Write_Text("Score:", 57, 4, 1);
              IntToStr(score, str);
              Glcd_Write_Text(str, 90, 4, 1);
-             //Tocar ode à alegria - não ficou nem um pouco parecido no PIC:
+             //Tocar ode ï¿½ alegria - nï¿½o ficou nem um pouco parecido no PIC:
              //MI - MI - FA - SOL - SOL
              Sound_Play(165, 250); Sound_Play(165, 250); Sound_Play(176, 250); Sound_Play(198, 250); Sound_Play(198, 250);
              //FA - MI - RE - DO - DO
