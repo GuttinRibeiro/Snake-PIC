@@ -2,6 +2,7 @@
         Gabriel Santos Ribeiro - 9771380
 */
 
+// Contantes que controlam o fluxo principal das telas
 #define MENU 0
 #define GAME 1
 #define INST 2
@@ -9,6 +10,7 @@
 // Conexão de dados do GLCD
 char GLCD_DataPort at PORTD;
 
+// Estrutura para desenhar caveira de fim de jogo
 const code char gameover[1024] = {
   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 192,  96,  32,  32,  96,   0,   0, 128, 128, 128, 128,   0,   0, 128, 128, 128, 128, 128, 128, 128,   0,   0,   0, 128, 128,   0,   0,   0,   0,   0, 128, 128, 128, 128,   0, 128,   0,   0,   0, 128,   0,   0, 128, 128,   0,   0,   0, 128, 128, 128,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   7,  12,   8,   9,  15,   0,   0,  14,  10,  10,  15,   0,   0,  15,   0,   0,  15,   0,   0,  15,   0,   0,   7,  10,  10,  11,   0,   0,   0,   0,  15,   8,   8,  15,   0,   0,   3,  12,  12,   3,   0,   7,  10,  10,  11,   0,   0,  15,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
@@ -20,6 +22,7 @@ const code char gameover[1024] = {
   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   1,   7,  15,  31,  31,  31,  31,  15,   7,   0,   0,   0,   0,   0,   1,   1,   0,   1,   1,   1,   1,   0,   1,   0,   1,   1,   0,   0,   0,   0,   0,   7,  15,  31,  31,  31,  31,  15,   7,   1,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0
 };
 
+// Estrutura para desenhar o menu inicial da aplicação
 const code char snake[1024] = {
 255, 255,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7, 255, 255, 255,
 255, 255,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  56,  68,  68,  68, 136,   0,   0, 240,  32,  16,  16,  16, 224,   0,   0,  32, 144, 144, 144, 224,   0,   0, 254, 128,  64,  32,  16,   0,   0, 224, 144, 144, 144, 144, 224,   0,   0,   0,   0,   0, 224,  16,  16,  16,  16, 224,   0,   0, 240,  32,  16,  16,  16, 224,   0,   0,   0,   0,   0, 252,  68,  68,  68,  68,  56,   0,   0, 252,   0,   0,   0, 240,   8,   4,   4,   4,   4,   8,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 255, 255, 255,
@@ -31,6 +34,7 @@ const code char snake[1024] = {
 255, 255, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 255, 255, 255
 };
 
+// Estrutura para desenhar o menu de instruções
 const code char instrucoes[1024] = {
 255, 255, 255,   7,   7, 135, 135, 135,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7, 135,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7, 135,   7,   7,   7,   7,   7,   7, 135, 135, 135,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7, 135,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7, 135,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7,   7, 255, 255, 255,
 255, 255, 255,   0, 129, 192, 160, 152, 135,   0,   0,   0,   0,  16,  16,  16,   0,   0,   0,   0,   0, 124, 130, 130,  68,   0,   0, 254,   0,   0, 254,   4,   2,   2, 252,   4,   2,   2, 252,   0,   0, 100, 146, 146,  82, 252,   0,   0,   0,   0,   0, 255,   0,   0,   0,   0,   0, 119, 136, 136, 136, 119,   0,   0,   0,   0,  16,  16,  16,   0,   0,   0,   0,   0, 255,  68, 130, 130, 124,   0,   0, 100, 146, 146,  82, 252,   0,   0, 254,   0, 130, 108,  16, 108, 130,   0, 124, 130, 130, 130, 124,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 255, 255, 255,
@@ -42,6 +46,7 @@ const code char instrucoes[1024] = {
 255, 255, 255, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 255, 255, 255
 };
 
+// Estrutura para desenhar o troféu de vitória ao fim do jogo
 const code char trofeu[1024] = {
   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 128, 128, 128, 128, 128, 128, 128, 128, 248, 248,   8,   8,   8,   8,   8,   8,   8,   8,   8,   8,   8,   8,   8,   8,   8,   8,   8,   8,   8, 232, 248, 128, 128, 128, 128, 128, 128, 128, 128,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
@@ -53,6 +58,7 @@ const code char trofeu[1024] = {
   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0
 };
 
+// Definição dos bits do GLCD:
 sbit GLCD_CS1 at RB0_bit;
 sbit GLCD_CS2 at RB1_bit;
 sbit GLCD_RS  at RB2_bit;
@@ -66,9 +72,10 @@ sbit GLCD_RS_Direction  at TRISB2_bit;
 sbit GLCD_RW_Direction  at TRISB3_bit;
 sbit GLCD_EN_Direction  at TRISB4_bit;
 sbit GLCD_RST_Direction at TRISB5_bit;
-// End Glcd module connections
+// Fim das conexões do GLCD
 
-// Global
+// Estruturas globais:
+// Enumeração de comandos de direção
 enum {
     LEFT,
     RIGHT,
@@ -76,11 +83,17 @@ enum {
     DOWN
 };
 
+// Estrutura auxiliar de posição
 typedef struct position {
      unsigned short int posx;
      unsigned short int posy;
 } Position;
 
+// Estrutura snake que encapsula as informações do jogador:
+// Lista de posições da cobra, flags de fim de jogo e de vitória,
+// índice da última posição preenchida no vetor da cobra para calcular
+// pontuação e usada em operações de inserção/remoção e para percorrer
+// o vetor pelas posições válidas
 typedef struct snake_char {
   Position list[200];
   unsigned short int tail_idx;
@@ -89,12 +102,16 @@ typedef struct snake_char {
 } Snake;
 
 
+// Variável global que controla se o jogo está no menu inicial, 
+// nas intruções ou no jogo
 unsigned short int game_control;
 
-// Fun��es para estruturas de dados
+// Funções para as estruturas de dados:
+// Função que inicializa a estrutura Snake, configurando o tamanho,
+// as posições iniciais e as flags
 void init_snake(Snake *player) {
   unsigned short int i;
-  player->tail_idx = 199;
+  player->tail_idx = 30;
 
   for (i = 0; i < player->tail_idx+1; i++) {
        player->list[i].posx = 50+i;
@@ -107,6 +124,10 @@ void init_snake(Snake *player) {
   player->win = 0;
 }
 
+
+// Função que adiciona uma nova posição à estrutura Snake no final do
+// vetor. Retorna 1 caso ocorra um erro (posição com coordenadas invá
+// lidas ou limite máximo de posições atingido => caso de vitória)
 int append_position(Snake *player, Position pos) {
   if(player->tail_idx == 199) {
         player->gameover = 1;
@@ -124,6 +145,8 @@ int append_position(Snake *player, Position pos) {
   return 0;
 }
 
+// Função que retorna 1 se a estrutura Snake possui a posição recebida
+// e 0 caso contrário
 int has_position(Snake player, Position pos) {
      unsigned short int i;
      for (i = 0; i < player.tail_idx; i++) {
@@ -135,14 +158,16 @@ int has_position(Snake player, Position pos) {
      return 0;
 }
 
-void head_conflit(Snake *player) {
+// Função que trata o caso de a cobra comer o próprio rabo
+void head_conflict(Snake *player) {
    unsigned short i;
    unsigned short new_tail;
    for(i = 1; i < player->tail_idx+1; i++) {
         if(player->list[0].posx == player->list[i].posx && player->list[0].posy == player->list[i].posy) {
-              Sound_Play(100, 1000);   // Frequency = 100Hz, duration = 1000ms
+              Sound_Play(100, 1000);   // Frequencia = 100Hz, duracao = 1000ms
               new_tail = i;
               for(i = new_tail; i < player->tail_idx + 1; i++) {
+                   // Apagar o ponto no GLCD: complementar cor
                    Glcd_Dot(player->list[i].posx, player->list[i].posy, 2);
               }
               player->tail_idx = new_tail;
@@ -150,6 +175,7 @@ void head_conflit(Snake *player) {
    }
 }
 
+// Função que desenha a cobra no GLCD
 void draw_snake(Snake player) {
   unsigned short int i;
   for (i = 0; i < player.tail_idx+1; i++) {
@@ -157,6 +183,8 @@ void draw_snake(Snake player) {
   }
 }
 
+// Função que realiza a movimentação da cobra com base no movimento
+// desejado recebido, utilizando a enumeração
 void move_snake(Snake *player, unsigned short int movement) {
    unsigned short int i;
    Position aux1, aux2;
@@ -166,7 +194,7 @@ void move_snake(Snake *player, unsigned short int movement) {
         case LEFT:
                     if(player->list[0].posx == 1) {   // chocou com a parede da esquerda
                          player->gameover = 1;
-                         Sound_Play(100, 1000);   // Frequency = 100Hz, duration = 1000ms
+                         Sound_Play(100, 1000);   // Frequencia = 100 Hz, duracao = 1000 ms
                     } else {
                          player->list[0].posx--;
                     }
@@ -175,7 +203,7 @@ void move_snake(Snake *player, unsigned short int movement) {
         case RIGHT:
                     if(player->list[0].posx == 126) {   // chocou com a parede da direita
                          player->gameover = 1;
-                         Sound_Play(100, 1000);   // Frequency = 100Hz, duration = 1000ms
+                         Sound_Play(100, 1000);   // Frequencia = 100 Hz, duracao = 1000 ms
                     } else {
                          player->list[0].posx++;
                     }
@@ -184,7 +212,7 @@ void move_snake(Snake *player, unsigned short int movement) {
         case UP:
                     if(player->list[0].posy == 10) {   // chocou com a parede de cima
                          player->gameover = 1;
-                         Sound_Play(100, 1000);   // Frequency = 100Hz, duration = 1000ms
+                         Sound_Play(100, 1000);   // Frequencia = 100 Hz, duracao = 1000 ms
                     } else {
                          player->list[0].posy--;
                     }
@@ -193,7 +221,7 @@ void move_snake(Snake *player, unsigned short int movement) {
         case DOWN:
                     if(player->list[0].posy == 62) {   // chocou com a parede de baixo
                          player->gameover = 1;
-                         Sound_Play(100, 1000);   // Frequency = 100Hz, duration = 1000ms
+                         Sound_Play(100, 1000);   // Frequencia = 100 Hz, duracao = 1000 ms
                     } else {
                          player->list[0].posy++;
                     }
@@ -213,7 +241,7 @@ void move_snake(Snake *player, unsigned short int movement) {
    Glcd_Dot(aux1.posx, aux1.posy, 2);
 }
 
-// Funcao que atualiza a pontuacao do jogador no LCD
+// Função que atualiza a pontuacao do jogador no LCD
 void update_score(unsigned short int new_score) {
     char str[10];
 
@@ -221,6 +249,7 @@ void update_score(unsigned short int new_score) {
     Glcd_Write_Text(str, 40, 0, 1);
 }
 
+// Função que retorna a distância de Manhattan entre duas posições
 unsigned short manhattan_dist(Position pos1, Position pos2) {
      unsigned short int x = pos1.posx - pos2.posx;
      unsigned short int y = pos1.posy - pos2.posy;
@@ -231,6 +260,8 @@ unsigned short manhattan_dist(Position pos1, Position pos2) {
      return x+y;
 }
 
+// Função que retorna a posição calculada de uma fruta com base na
+// cobra e na distância de Manhattan
 Position add_fruit(Snake player) {
      Position ret;
      ret.posx = rand() % 123 + 3;
@@ -242,7 +273,7 @@ Position add_fruit(Snake player) {
      return ret;
 }
 
-// Funcao que desenha o quadrado do jogo
+// Função que desenha o quadrado do jogo
 void draw_game_screen() {
     Glcd_Write_Text("Score:", 0, 0, 1);
 
@@ -254,6 +285,7 @@ void draw_game_screen() {
     Glcd_Line(127, 9, 127, 127, 1);                 // Draw line
 }
 
+// Função que trata as entradas do teclado matricial
 void check_keypad(unsigned short int idx, unsigned short int function, unsigned short int *movement) {
     switch(idx) {
                 case 0:
@@ -299,22 +331,22 @@ void main() {
   score = player.tail_idx;
 
   game_control = 0;
-  ANSELA  = 0;                                    // Configure AN pins as digital
+  ANSELA  = 0;                                    // Configura portas como digitais
   ANSELB = 0;
   ANSELC = 0;
   ANSELD = 0;
   ANSELE = 0;
-  trise.f1 = 0;                            // RE1 configurada como sa?da
+  trise.f1 = 0;                            // RE1 configurada como saída (buzzer)
   late.re1 = 1;
 
-  Sound_Init(&PORTE, 1);
+  Sound_Init(&PORTE, 1);                   // Inicialização da lib Sound para o pino RE1 (buzzer)
   trisc = 0b11110000;                      // bits 7-4 como entrada e bits 3-0 como saida
 
-  C1ON_bit = 0;                                  // Disable comparators
+  C1ON_bit = 0;                                  // Desativa comparadores
   C2ON_bit = 0;
 
-  Glcd_Init();                                   // Initialize GLCD
-  Glcd_Fill(0x00);                               // Clear GLCD
+  Glcd_Init();                                   // Inicializa o GLCD
+  Glcd_Fill(0x00);                               // Limpa o GLCD
 
   Delay_ms(1000);
 
@@ -327,7 +359,7 @@ void main() {
             check_keypad(i, MENU, &movement);
       }
     }
-    Glcd_Fill(0x00);                               // Clear GLCD
+    Glcd_Fill(0x00);                               // Limpa o GLCD
 
     // Loop das intrucoes
     while (game_control == 1) {
@@ -337,7 +369,7 @@ void main() {
             check_keypad(i, INST, &movement);
       }
     }
-    Glcd_Fill(0x00);                               // Clear GLCD
+    Glcd_Fill(0x00);                               // Limpa o GLCD
 
     // Loop do jogo
     while (game_control == 2) {
@@ -350,10 +382,10 @@ void main() {
       }
       Delay_ms(25);
       move_snake(&player, movement);
-      head_conflit(&player);
+      head_conflict(&player);
       score = player.tail_idx;
       if(has_position(player, fruit)) {
-          Sound_Play(600, 1000);   // Frequency = 600Hz, duration = 1000ms
+          Sound_Play(600, 1000);   // Frequencia = 600 Hz, duracao = 1000ms
           if(movement == LEFT) {
                aux.posx = player.list[player.tail_idx].posx + 1;
                aux.posy = player.list[player.tail_idx].posy;
